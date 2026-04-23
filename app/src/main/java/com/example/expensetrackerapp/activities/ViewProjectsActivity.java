@@ -271,6 +271,23 @@ public class ViewProjectsActivity extends AppCompatActivity implements ProjectAd
         return false;
     }
 
+    private String normalizeDate(String date) {
+        if (date == null) return "";
+        // If date is in format 2026-04-21T00:00:00+07:00, convert it to 21/04/2026
+        if (date.contains("T")) {
+            try {
+                String datePart = date.split("T")[0]; // Get "2026-04-21"
+                String[] parts = datePart.split("-");
+                if (parts.length == 3) {
+                    return parts[2] + "/" + parts[1] + "/" + parts[0];
+                }
+            } catch (Exception e) {
+                return date;
+            }
+        }
+        return date;
+    }
+
     private void syncFromCloud() {
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://expensetrackerapp-5f7a7-default-rtdb.firebaseio.com/");
         DatabaseReference myRef = database.getReference("data_sync");
@@ -287,8 +304,9 @@ public class ViewProjectsActivity extends AppCompatActivity implements ProjectAd
                         ContentValues pValues = new ContentValues();
                         pValues.put(DBHelper.COL_NAME, projectSnap.child("name").getValue(String.class));
                         pValues.put(DBHelper.COL_DESC, projectSnap.child("description").getValue(String.class));
-                        pValues.put(DBHelper.COL_START, projectSnap.child("startDate").getValue(String.class));
-                        pValues.put(DBHelper.COL_END, projectSnap.child("endDate").getValue(String.class));
+                        // Normalize project dates too
+                        pValues.put(DBHelper.COL_START, normalizeDate(projectSnap.child("startDate").getValue(String.class)));
+                        pValues.put(DBHelper.COL_END, normalizeDate(projectSnap.child("endDate").getValue(String.class)));
                         pValues.put(DBHelper.COL_MANAGER, projectSnap.child("manager").getValue(String.class));
                         pValues.put(DBHelper.COL_STATUS, projectSnap.child("status").getValue(String.class));
                         pValues.put(DBHelper.COL_BUDGET, projectSnap.child("budget").getValue(Double.class));
@@ -300,14 +318,14 @@ public class ViewProjectsActivity extends AppCompatActivity implements ProjectAd
                             for (DataSnapshot expSnap : expensesSnap.getChildren()) {
                                 ContentValues eValues = new ContentValues();
                                 eValues.put(DBHelper.COL_EXP_PROJECT_ID, pId);
-                                eValues.put(DBHelper.COL_EXP_DATE, expSnap.child("date").getValue(String.class));
+                                // FIXED: Normalize the expense date here
+                                eValues.put(DBHelper.COL_EXP_DATE, normalizeDate(expSnap.child("date").getValue(String.class)));
                                 eValues.put(DBHelper.COL_EXP_AMOUNT, expSnap.child("amount").getValue(Double.class));
                                 eValues.put(DBHelper.COL_EXP_CURRENCY, expSnap.child("currency").getValue(String.class));
                                 eValues.put(DBHelper.COL_EXP_TYPE, expSnap.child("type").getValue(String.class));
                                 eValues.put(DBHelper.COL_EXP_PAYMENT_METHOD, expSnap.child("method").getValue(String.class));
                                 eValues.put(DBHelper.COL_EXP_CLAIMANT, expSnap.child("claimant").getValue(String.class));
                                 eValues.put(DBHelper.COL_EXP_PAYMENT_STATUS, expSnap.child("status").getValue(String.class));
-                                // FIXED: Read description and location from Firebase
                                 eValues.put(DBHelper.COL_EXP_DESCRIPTION, expSnap.child("description").getValue(String.class));
                                 eValues.put(DBHelper.COL_EXP_LOCATION, expSnap.child("location").getValue(String.class));
                                 
@@ -316,7 +334,7 @@ public class ViewProjectsActivity extends AppCompatActivity implements ProjectAd
                         }
                     }
                     loadProjects();
-                    Toast.makeText(ViewProjectsActivity.this, "Data synced from cloud!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewProjectsActivity.this, "Data synced and dates normalized!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(ViewProjectsActivity.this, "No data found on cloud", Toast.LENGTH_SHORT).show();
                 }
@@ -361,7 +379,6 @@ public class ViewProjectsActivity extends AppCompatActivity implements ProjectAd
                         expMap.put("method", expCursor.getString(expCursor.getColumnIndexOrThrow(DBHelper.COL_EXP_PAYMENT_METHOD)));
                         expMap.put("claimant", expCursor.getString(expCursor.getColumnIndexOrThrow(DBHelper.COL_EXP_CLAIMANT)));
                         expMap.put("status", expCursor.getString(expCursor.getColumnIndexOrThrow(DBHelper.COL_EXP_PAYMENT_STATUS)));
-                        // FIXED: Include description and location in upload
                         expMap.put("description", expCursor.getString(expCursor.getColumnIndexOrThrow(DBHelper.COL_EXP_DESCRIPTION)));
                         expMap.put("location", expCursor.getString(expCursor.getColumnIndexOrThrow(DBHelper.COL_EXP_LOCATION)));
                         
