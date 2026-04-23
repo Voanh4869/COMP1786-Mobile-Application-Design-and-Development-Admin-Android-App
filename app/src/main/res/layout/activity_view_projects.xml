@@ -1,0 +1,85 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/searchSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:background="#F5F5F5"
+        android:layout_marginTop="75dp">
+
+        <EditText
+            android:id="@+id/etSearchName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search by name or description..."
+            android:background="@android:drawable/edit_text"
+            android:padding="10dp"
+            android:drawableStart="@android:drawable/ic_menu_search" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/etSearchDate"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Date (DD/MM/YYYY)"
+                    android:focusable="false"
+                    android:textSize="14sp" />
+
+                <Spinner
+                    android:id="@+id/spSearchStatus"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:id="@+id/etSearchOwner"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Owner/Manager"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <Button
+            android:id="@+id/btnResetSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Clear Filters"
+            android:textSize="12sp"
+            android:layout_gravity="end"
+            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnAddProjectFromView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ADD PROJECT"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewProjects"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/searchSection"
+        android:layout_above="@id/btnAddProjectFromView"
+        android:paddingTop="8dp"
+        android:clipToPadding="false" />
+
+</RelativeLayout>

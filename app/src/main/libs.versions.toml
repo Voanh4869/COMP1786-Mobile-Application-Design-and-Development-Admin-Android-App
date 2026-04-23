@@ -1,0 +1,15 @@
+toml
+[versions]
+# ... other versions
+googleServices = "4.4.2"
+firebaseBom = "33.9.0"
+
+[libraries]
+# ... other libraries
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+
+[plugins]
+# ... other plugins
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }

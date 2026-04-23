@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_sync_from_cloud"
+        android:title="Sync from Cloud"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_upload"
+        android:title="Upload to Cloud"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_reset_db"
+        android:title="Reset Database"
+        app:showAsAction="never" />
+</menu>
