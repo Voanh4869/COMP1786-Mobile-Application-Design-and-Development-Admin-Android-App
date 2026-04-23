@@ -17,13 +17,14 @@ import java.util.Locale;
 
 public class AddExpenseActivity extends AppCompatActivity {
 
-    EditText etDate, etAmount, etCurrency, etClaimant, etDescription, etLocation;
-    Spinner spType, spPaymentMethod, spPaymentStatus;
+    EditText etDate, etAmount, etClaimant, etDescription, etLocation;
+    Spinner spCurrency, spType, spPaymentMethod, spPaymentStatus;
     Button btnSave;
     DBHelper dbHelper;
     int projectId = -1;
     Expense existingExpense;
 
+    String[] currencies = {"USD", "EUR", "GBP", "VND"};
     String[] types = {"Travel", "Equipment", "Materials", "Services", "Software/Licenses", "Labour costs", "Utilities", "Miscellaneous"};
     String[] methods = {"Cash", "Credit Card", "Bank Transfer", "Cheque"};
     String[] statuses = {"Paid", "Pending", "Reimbursed"};
@@ -55,7 +56,7 @@ public class AddExpenseActivity extends AppCompatActivity {
     private void initViews() {
         etDate = findViewById(R.id.etExpDate);
         etAmount = findViewById(R.id.etExpAmount);
-        etCurrency = findViewById(R.id.etExpCurrency);
+        spCurrency = findViewById(R.id.spExpCurrency);
         etClaimant = findViewById(R.id.etExpClaimant);
         etDescription = findViewById(R.id.etExpDescription);
         etLocation = findViewById(R.id.etExpLocation);
@@ -66,6 +67,7 @@ public class AddExpenseActivity extends AppCompatActivity {
     }
 
     private void setupSpinners() {
+        spCurrency.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, currencies));
         spType.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, types));
         spPaymentMethod.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, methods));
         spPaymentStatus.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, statuses));
@@ -74,11 +76,11 @@ public class AddExpenseActivity extends AppCompatActivity {
     private void fillFields(Expense expense) {
         etDate.setText(expense.getDate());
         etAmount.setText(String.valueOf(expense.getAmount()));
-        etCurrency.setText(expense.getCurrency());
         etClaimant.setText(expense.getClaimant());
         etDescription.setText(expense.getDescription());
         etLocation.setText(expense.getLocation());
 
+        spCurrency.setSelection(Arrays.asList(currencies).indexOf(expense.getCurrency()));
         spType.setSelection(Arrays.asList(types).indexOf(expense.getType()));
         spPaymentMethod.setSelection(Arrays.asList(methods).indexOf(expense.getPaymentMethod()));
         spPaymentStatus.setSelection(Arrays.asList(statuses).indexOf(expense.getPaymentStatus()));
@@ -94,7 +96,7 @@ public class AddExpenseActivity extends AppCompatActivity {
     private void saveExpense() {
         String date = etDate.getText().toString().trim();
         String amountStr = etAmount.getText().toString().trim();
-        String currency = etCurrency.getText().toString().trim();
+        String currency = spCurrency.getSelectedItem().toString();
         String claimant = etClaimant.getText().toString().trim();
         String type = spType.getSelectedItem().toString();
         String method = spPaymentMethod.getSelectedItem().toString();
@@ -102,12 +104,19 @@ public class AddExpenseActivity extends AppCompatActivity {
         String desc = etDescription.getText().toString().trim();
         String loc = etLocation.getText().toString().trim();
 
-        if (date.isEmpty() || amountStr.isEmpty() || currency.isEmpty() || claimant.isEmpty()) {
+        if (date.isEmpty() || amountStr.isEmpty() || claimant.isEmpty()) {
             Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        double amount = Double.parseDouble(amountStr);
+        double amount;
+        try {
+            amount = Double.parseDouble(amountStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid amount", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DBHelper.COL_EXP_PROJECT_ID, projectId);

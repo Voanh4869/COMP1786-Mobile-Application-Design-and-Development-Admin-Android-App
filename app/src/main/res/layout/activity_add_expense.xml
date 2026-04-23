@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -27,12 +28,16 @@
             android:inputType="numberDecimal"
             android:layout_marginTop="8dp"/>
 
-        <EditText
-            android:id="@+id/etExpCurrency"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Currency"
+            android:layout_marginTop="16dp"/>
+        <Spinner
+            android:id="@+id/spExpCurrency"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Currency (Required, e.g. USD, EUR)"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="4dp"/>
 
         <TextView
             android:layout_width="wrap_content"
